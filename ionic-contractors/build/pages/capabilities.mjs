@@ -1,0 +1,148 @@
+import { capabilities, capabilityGroups, capsIn } from '../site.mjs';
+import { sceneStrip } from '../scenes.mjs';
+import {
+  pageHero, sectionHead, ctaBand, icons, btn, btnRow, ctaPrimary, ctaSecondary,
+  capabilityMatrix, accordion, esc, faqLD, deliveryCards,
+} from '../components.mjs';
+
+const primary = capabilities.find((c) => c.primary);
+const groupOf = (id) => capabilityGroups.find((g) => g.id === id);
+const lineCard = (c, i) => `<article class="card reveal" id="${esc(c.id)}" style="--reveal-delay:${i * 70}ms">
+  <span class="card__icon">${icons[c.icon] ? icons[c.icon]() : icons.building()}</span>
+  <h3 class="card__title">${esc(c.name)}</h3>
+  <p class="card__body">${esc(c.blurb)}</p>
+  <div class="naics-cell">${c.naics.map((n) => `<span class="naics-chip">NAICS ${n}</span>`).join('')}</div>
+</article>`;
+
+/* One array feeds both the rendered accordion and the FAQPage schema,
+   so the two can never drift out of sync. */
+const faqs = [
+  {
+    q: 'Which NAICS codes does Ionic work under?',
+    a: `<p>General construction and trades lead, under NAICS 236220 (primary), 236210, 238210, 238220, and 238990. Construction services also cover 562910, 561730, and 115112. Non-construction services (professional and support) cover 811310, 423810, 423820, 541611, 541618, 541690, 541614, and 485999. The full list, with Product Service Codes, is on the <a href="/federal-contracting/">Federal Contracting</a> page.</p>`,
+  },
+  {
+    q: 'Can Ionic take a services-only requirement?',
+    a: '<p>Yes. Environmental remediation, grounds and vegetation management, equipment maintenance and sourcing, management and technical consulting, and logistics and ground transportation all stand alone as requirements. They do not have to be attached to a construction scope.</p>',
+  },
+  {
+    q: 'Does Ionic work for state, local, and private clients?',
+    a: '<p>Yes. Federal agencies come first, and Ionic delivers the same capability lines for state, county, and municipal governments and for private-sector owners, developers, and general contractors.</p>',
+  },
+  {
+    q: 'How does Ionic build capacity for a larger scope?',
+    a: '<p>Through a vetted subcontractor and vendor network maintained for exactly this purpose. Firms register with their trades, NAICS codes, certifications, insurance, and bonding, so capacity can be assembled quickly against a live opportunity. <a href="/subcontractor-registration/">Register to work with Ionic</a>.</p>',
+  },
+];
+
+const body = `
+${pageHero({
+  crumbs: [{ href: '/capabilities/', label: 'Capabilities' }],
+  eyebrow: 'Capabilities',
+  title: 'Two lines of business, organized for the requirement.',
+  lead: `Two lines of business: construction services and non-construction services. ${capabilities.length} capability lines in all, each mapped to the NAICS codes agencies, primes, and owners search by.`,
+  actions: btnRow(ctaPrimary(), btn('#matrix', 'Jump to capability matrix', { variant: 'secondary', arrow: false })),
+})}
+
+<section class="section" id="construction" aria-labelledby="construction-title">
+  <div class="wrap">
+    ${sectionHead({
+      title: esc(groupOf('construction').name),
+      lead: esc(groupOf('construction').blurb),
+      id: 'construction-title',
+    })}
+    ${sceneStrip([['build', 'Buildings in progress: general construction &amp; trades'], ['grounds', 'Grounds, landscaping &amp; vegetation management']])}
+    <div class="card card--pad-lg card--feature reveal" id="${esc(primary.id)}" style="gap:var(--s-5)">
+      <div style="display:flex;align-items:center;gap:var(--s-4);flex-wrap:wrap">
+        <span class="card__icon" style="margin:0">${icons.construction(26)}</span>
+        <span class="badge badge--accent">Primary capability</span>
+      </div>
+      <h3 class="display t-3xl">${esc(primary.name)}</h3>
+      <p class="lead" style="max-width:var(--measure);color:#D2D4DA">${esc(primary.blurb)}</p>
+      <div class="naics-cell">${primary.naics.map((n) => `<span class="naics-chip">NAICS ${n}</span>`).join('')}</div>
+      <div class="grid grid--2 mt-5" style="gap:var(--s-5)">
+        <ul class="check-list">
+          ${primary.points.slice(0, 3).map((p) => `<li>${icons.check(15)}<span>${esc(p)}</span></li>`).join('')}
+        </ul>
+        <ul class="check-list">
+          ${primary.points.slice(3).map((p) => `<li>${icons.check(15)}<span>${esc(p)}</span></li>`).join('')}
+        </ul>
+      </div>
+    </div>
+    <div class="grid grid--pairs mt-5">
+      ${capsIn('construction').filter((c) => !c.primary).map(lineCard).join('')}
+    </div>
+  </div>
+</section>
+
+<section class="section theme-gray" id="professional" aria-labelledby="professional-title">
+  <div class="wrap">
+    ${sectionHead({
+      title: esc(groupOf('professional').name),
+      lead: esc(groupOf('professional').blurb),
+      id: 'professional-title',
+    })}
+    ${sceneStrip([['equipment', 'Heavy equipment maintenance &amp; sourcing'], ['bus', 'Ground passenger transportation &amp; logistics']])}
+    <div class="grid grid--3">
+      ${capsIn('professional').map(lineCard).join('')}
+    </div>
+  </div>
+</section>
+
+<section class="section" id="matrix" aria-labelledby="matrix-title">
+  <div class="wrap">
+    ${sectionHead({
+      eyebrow: 'Capability matrix',
+      title: 'Capability to NAICS, at a glance',
+      lead: 'The mapping a contracting officer scans first: each capability line and the NAICS codes it is pursued under.',
+      id: 'matrix-title',
+    })}
+
+    ${capabilityMatrix()}
+  </div>
+</section>
+
+<section class="section theme-gray" aria-labelledby="delivery-title">
+  <div class="wrap">
+    ${sectionHead({
+      eyebrow: 'Delivery approach',
+      title: 'Mobilize. Execute. Close out.',
+      lead: 'Every capability line is delivered the same way: planned before mobilization, documented through execution, and closed out complete.',
+      id: 'delivery-title',
+    })}
+    ${deliveryCards()}
+  </div>
+</section>
+
+<section class="section" aria-labelledby="faq-title">
+  <div class="wrap split">
+    <div>
+      ${sectionHead({
+        eyebrow: 'Common questions',
+        title: 'Matching Ionic to your requirement.',
+        lead: 'Send the scope, the NAICS, or the solicitation number and we will tell you plainly what Ionic carries.',
+        id: 'faq-title',
+      })}
+      <div class="mt-6 reveal">${btnRow(ctaSecondary(), btn('/subcontractor-registration/', 'Register as a subcontractor', { variant: 'ghost' }))}</div>
+    </div>
+    <div class="reveal">
+      ${accordion(faqs, { idPrefix: 'cap' })}
+    </div>
+  </div>
+</section>
+
+${ctaBand({
+  title: 'Match a requirement to a capability.',
+  lead: 'Send the scope, the NAICS, or the solicitation number. We will tell you what Ionic carries and how we would deliver it.',
+})}
+`;
+
+export default {
+  url: '/capabilities/',
+  title: 'Capabilities & NAICS Codes',
+  description:
+    'Construction and non-construction services: general construction, remediation, grounds, equipment, consulting, logistics, and transportation, mapped to NAICS.',
+  crumbs: [{ href: '/capabilities/', label: 'Capabilities' }],
+  extraLD: [faqLD(faqs)],
+  body,
+};

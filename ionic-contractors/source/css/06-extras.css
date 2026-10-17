@@ -1,0 +1,266 @@
+/* ==================================================================
+   SPLIT LAYOUTS + PROCESS STEPS
+================================================================== */
+
+.split { display: grid; gap: var(--s-8); align-items: start; }
+
+@media (min-width: 58rem) {
+  .split { grid-template-columns: 1fr 1fr; gap: var(--s-10); }
+  .split--sticky > :first-child { position: sticky; top: calc(var(--bar-h) + var(--s-6)); }
+  .split--wide-left { grid-template-columns: 1.15fr 1fr; }
+}
+
+.steps { counter-reset: step; display: grid; gap: var(--s-5); }
+
+.step {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--s-5);
+  padding-block-end: var(--s-5);
+  border-block-end: 1px solid var(--c-line);
+}
+.step:last-child { border-block-end: 0; padding-block-end: 0; }
+
+.step__num {
+  counter-increment: step;
+  inline-size: 2.75rem;
+  block-size: 2.75rem;
+  flex: none;
+  display: grid;
+  place-items: center;
+  background: var(--brand-graphite);
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: var(--t-sm);
+  font-weight: 600;
+  border-radius: var(--r-sm);
+}
+.step__num::before { content: counter(step, decimal-leading-zero); }
+
+.step__title { font-size: var(--fs-h4); font-weight: 700; margin-block-end: var(--s-2); }
+.step__body { color: var(--c-text-2); font-size: var(--t-sm); max-width: var(--measure); }
+.step__body a { color: var(--c-text); font-weight: 600; }
+
+/* ==================================================================
+   MARQUEE — capability lines. GSAP drives it and nudges speed with
+   scroll velocity; CSS keyframes are the fallback.
+================================================================== */
+
+.marquee {
+  position: relative;
+  overflow: hidden;
+  border-block: 1px solid var(--c-line-mid);
+  padding-block: clamp(1.25rem, 0.9rem + 1.2vw, 2rem);
+}
+/* Edge fades are static overlays, not a mask: a mask over a moving
+   track has to be recomposited every frame. */
+.marquee::before, .marquee::after {
+  content: '';
+  position: absolute;
+  inset-block: 0;
+  inline-size: 8%;
+  z-index: 1;
+  pointer-events: none;
+}
+.marquee::before { inset-inline-start: 0; background: linear-gradient(90deg, var(--c-base), transparent); }
+.marquee::after  { inset-inline-end: 0;   background: linear-gradient(-90deg, var(--c-base), transparent); }
+
+.marquee__track {
+  display: flex;
+  align-items: center;
+  gap: clamp(2rem, 1.2rem + 2.6vw, 4rem);
+  width: max-content;
+  animation: marquee 50s linear infinite;
+  will-change: transform;
+}
+.marquee[data-gsap='true'] .marquee__track { animation: none; }
+
+.marquee__item {
+  display: flex;
+  align-items: center;
+  gap: clamp(2rem, 1.2rem + 2.6vw, 4rem);
+  font-size: var(--fs-h2);
+  font-weight: 700;
+  font-stretch: var(--stretch-display);
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+  color: var(--c-text);
+  white-space: nowrap;
+}
+.marquee__item:nth-child(even) { color: transparent; -webkit-text-stroke: 1.25px var(--c-text-3); }
+
+.marquee__item::after {
+  content: '';
+  inline-size: 0.6em;
+  block-size: 2px;
+  background: var(--c-text-3);
+  flex: none;
+}
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+[data-anim-idle='true'] .marquee__track { animation-play-state: paused; }
+
+html:not(.motion-ok) .marquee__track { animation: none; flex-wrap: wrap; width: auto; justify-content: center; row-gap: var(--s-3); }
+html:not(.motion-ok) .marquee__track > [aria-hidden='true'] { display: none; }
+
+/* ==================================================================
+   CAPABILITY STATEMENT — direct download panel
+================================================================== */
+
+.doc {
+  display: grid;
+  gap: var(--s-8);
+  align-items: center;
+}
+@media (min-width: 58rem) { .doc { grid-template-columns: 0.8fr 1.2fr; gap: var(--s-10); } }
+
+.doc__sheet {
+  position: relative;
+  aspect-ratio: 8.5 / 11;
+  max-inline-size: 22rem;
+  inline-size: 100%;
+  margin-inline: auto;
+  padding: var(--s-6);
+  border-radius: var(--r-sm);
+  background: #fff;
+  box-shadow: var(--shadow-lg);
+  display: grid;
+  align-content: start;
+  gap: var(--s-4);
+  overflow: hidden;
+  transform: rotate(-2deg);
+}
+.doc__sheet img { inline-size: 70%; block-size: auto; }
+.doc__sheet-bar { block-size: 4px; inline-size: 100%; background: var(--brand-graphite); }
+.doc__sheet-line { block-size: 7px; border-radius: 2px; background: var(--c-surface-3); }
+.doc__sheet-line:nth-child(odd) { inline-size: 82%; }
+.doc__sheet-cols { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-3); margin-block-start: var(--s-2); }
+.doc__sheet-foot { position: absolute; inset-inline: 0; inset-block-end: 0; block-size: 10px; background: linear-gradient(90deg, var(--c-orange) 0 28%, var(--brand-graphite) 28%); }
+
+.doc__contents { display: grid; gap: var(--s-3); margin-block: var(--s-6); }
+.doc__row { display: grid; grid-template-columns: auto 1fr; gap: var(--s-3); align-items: start; color: var(--c-text-2); }
+.doc__row svg { color: var(--c-text); margin-block-start: 0.4em; flex: none; }
+
+/* ==================================================================
+   CONTACT DETAIL CARDS
+================================================================== */
+
+.contact-cards { display: grid; gap: var(--s-4); grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr)); }
+
+.contact-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+  padding: var(--s-5);
+  border: 1px solid var(--c-line-mid);
+  border-radius: var(--r);
+  background: var(--c-surface-2);
+  transition: border-color var(--dur) var(--ease);
+}
+.contact-card:hover { border-color: var(--c-line-strong); }
+.contact-card__icon { color: var(--c-text); }
+.contact-card__label { font-size: var(--t-2xs); font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--c-text-3); }
+.contact-card__value { font-size: var(--t-md); font-weight: 700; color: var(--c-text); word-break: break-word; }
+.contact-card a.contact-card__value { text-decoration: none; }
+.contact-card a.contact-card__value:hover { text-decoration: underline; }
+.contact-card__note { font-size: var(--t-xs); color: var(--c-text-3); }
+
+/* ==================================================================
+   404
+================================================================== */
+.notfound {
+  min-block-size: 70vh;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  padding-block: calc(var(--header-h) + var(--s-10)) var(--s-10);
+}
+.notfound__code { font-family: var(--font-mono); font-size: clamp(3rem, 2rem + 6vw, 6rem); font-weight: 600; color: var(--c-text-3); line-height: 1; }
+
+/* ==================================================================
+   UTILITIES
+================================================================== */
+.mt-0 { margin-top: 0; }
+.mt-3 { margin-top: var(--s-3); }
+.mt-4 { margin-top: var(--s-4); }
+.mt-5 { margin-top: var(--s-5); }
+.mt-6 { margin-top: var(--s-6); }
+.mt-7 { margin-top: var(--s-7); }
+.mt-8 { margin-top: var(--s-8); }
+.text-center { text-align: center; }
+.self-start { align-self: flex-start; }
+.muted { color: var(--c-text-3); }
+.max-measure { max-width: var(--measure); }
+
+/* ==================================================================
+   V13 CONSISTENCY PASS
+   One body size for every paragraph that is read (16px); 14px is for
+   meta only (labels, captions, legal). Every section head aligns left.
+   Footer links share one rhythm, wrapped or not.
+================================================================== */
+.card__body, .diff__body, .step__body, .person__bio, .location__note,
+.stat__note, .naics-row__title, .check-list li { font-size: var(--fs-body); line-height: 1.6; }
+.diff__body { max-inline-size: 34ch; }
+.diff__title { font-size: var(--fs-h4); }
+
+.section-head--center, .section-head--center .lead { margin-inline: 0; text-align: start; }
+.section-head--center::before { margin-inline: 0; }
+
+/* Primary nav: two-line menu items */
+.nav__menu { min-inline-size: 19rem; }
+.nav__menu-text { display: flex; flex-direction: column; gap: 2px; }
+.nav__menu-text small { font-size: var(--fs-label); font-weight: 500; color: var(--c-text-3); letter-spacing: 0; }
+.nav__menu a:has(.nav__menu-text) { padding-block: var(--s-3); }
+
+/* Footer */
+.footer { border-block-start: 1px solid var(--c-line); padding-block-start: var(--s-9); }
+@media (min-width: 64rem) { .footer__grid { grid-template-columns: 1.35fr 1.15fr 1fr 1fr; gap: var(--s-8); } }
+.footer__list { gap: 0; }
+.footer__list li { display: flex; }
+.footer__link { min-block-size: 0; padding-block: 0.4rem; line-height: 1.4; }
+.footer__sub { margin-block: var(--s-3) var(--s-1); font-size: var(--fs-label); font-weight: 650; color: var(--c-text); letter-spacing: 0.04em; }
+.footer__heading + .footer__sub { margin-block-start: 0; }
+address.footer__address { line-height: 1.7; }
+address.footer__address a { min-block-size: 0; }
+.footer__naics { margin-block-start: var(--s-9); padding-block-start: var(--s-6); border-block-start: 1px solid var(--c-line); display: grid; gap: var(--s-4); }
+@media (min-width: 64rem) { .footer__naics { grid-template-columns: auto 1fr auto; align-items: center; gap: var(--s-6); } .footer__naics .footer__heading { margin: 0; } }
+.footer__codes { display: flex; flex-wrap: wrap; gap: var(--s-2); }
+.footer__codes li { padding: 0.25rem 0.5rem; border: 1px solid var(--c-line-mid); border-radius: var(--r-sm); font-size: var(--fs-label); color: var(--c-text-2); }
+.footer__codes li.is-primary { color: var(--c-text); border-color: var(--c-line-strong); }
+.footer__naics + .footer__bottom { margin-block-start: var(--s-6); }
+
+/* Blueprint motif: dashed slots */
+.bp-dash { stroke-dasharray: 4 4; }
+
+/* ==================================================================
+   CAPABILITY SCENES (capabilities page)
+================================================================== */
+.scenes { display: grid; gap: var(--gap); margin-block-end: var(--s-8); }
+@media (min-width: 48rem) { .scenes { grid-template-columns: repeat(2, 1fr); } }
+.scene { margin: 0; background: #0E0E11; border-radius: var(--r); overflow: hidden; border: 1px solid rgb(11 11 12 / 30%); }
+.scene__art { display: block; inline-size: 100%; block-size: auto; }
+.scene__caption { display: flex; align-items: baseline; gap: var(--s-3); padding: var(--s-4) var(--s-5); color: #E4E5E9; font-size: var(--fs-sm); font-weight: 600; border-block-start: 1px solid rgb(243 244 246 / 10%); }
+.scene__num { font-family: var(--font-mono); font-weight: 500; color: #8A8C94; }
+
+/* ==================================================================
+   PAST PERFORMANCE
+================================================================== */
+.pp { display: grid; gap: var(--s-7); align-items: center; }
+@media (min-width: 64rem) { .pp { grid-template-columns: 1fr 1fr; } .pp .section-head { margin-block-end: 0; } }
+.pp__logos { display: grid; gap: var(--gap); grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); }
+.pp__logo { display: grid; place-items: center; min-block-size: 9rem; padding: var(--pad-card); background: #fff; border: 1px solid var(--c-line-mid); border-radius: var(--r); }
+.pp__logo img { max-inline-size: 100%; max-block-size: 5.5rem; inline-size: auto; block-size: auto; }
+.pp__lockup { display: flex; align-items: center; gap: var(--s-4); color: var(--c-text); }
+.pp__short { display: grid; place-items: center; inline-size: 3.5rem; block-size: 3.5rem; border: 2px solid currentColor; border-radius: 50%; font-weight: 800; font-stretch: 112%; letter-spacing: 0.04em; }
+.pp__name { display: flex; flex-direction: column; font-size: var(--fs-h4); font-weight: 750; font-stretch: 108%; line-height: 1.15; }
+.pp__name small { font-size: var(--fs-label); font-weight: 650; letter-spacing: 0.12em; text-transform: uppercase; color: var(--c-text-3); }
+
+/* Agency seal in the past-performance tile; SDVOSB seal in the footer */
+.pp__seal { inline-size: 6rem; block-size: 6rem; flex: none; }
+.footer__seal { display: inline-grid; place-items: center; margin-block-start: var(--s-5); padding: var(--s-3); background: #fff; border-radius: var(--r); }
+.footer__seal img { inline-size: 6rem; block-size: auto; }

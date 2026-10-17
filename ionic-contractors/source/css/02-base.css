@@ -1,0 +1,218 @@
+/* ==================================================================
+   FONTS — self-hosted woff2, Latin subset, no runtime third-party
+   request. Archivo is one variable file carrying both the width and
+   weight axes; JetBrains Mono is for identifiers only.
+================================================================== */
+
+@font-face {
+  font-family: 'Archivo';
+  font-style: normal;
+  font-weight: 100 900;
+  font-stretch: 62% 125%;
+  font-display: swap;
+  src: url('/assets/fonts/archivo-var.woff2') format('woff2-variations'),
+       url('/assets/fonts/archivo-var.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400 600;
+  font-display: swap;
+  src: url('/assets/fonts/jetbrains-mono-var.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* ==================================================================
+   RESET / BASE
+================================================================== */
+
+*, *::before, *::after { box-sizing: border-box; }
+* { margin: 0; }
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-padding-top: calc(var(--bar-h) + var(--s-5));
+}
+
+html:not(.lenis) { scroll-behavior: smooth; }
+html.lenis { scroll-behavior: auto; }
+html.lenis, html.lenis body { height: auto; }
+.lenis.lenis-stopped { overflow: hidden; }
+
+body {
+  font-family: var(--font-sans);
+  font-size: var(--fs-body);
+  font-weight: 400;
+  font-stretch: 100%;
+  line-height: var(--lh-body);
+  color: var(--c-text);
+  background: var(--c-base);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-kerning: normal;
+  overflow-x: clip;
+}
+
+@media (min-width: 62rem) { body { font-size: 1.0625rem; } }
+
+img, video, svg, canvas { display: block; max-width: 100%; }
+img, video { height: auto; }
+
+input, button, textarea, select { font: inherit; color: inherit; }
+button { background: none; border: 0; cursor: pointer; }
+ul, ol { list-style: none; padding: 0; }
+
+a { color: inherit; text-decoration-color: var(--c-line-strong); text-underline-offset: 0.22em; text-decoration-thickness: 1px; }
+
+:target { scroll-margin-top: calc(var(--bar-h) + var(--s-5)); }
+[hidden] { display: none !important; }
+
+:focus { outline: none; }
+:focus-visible {
+  outline: 2px solid var(--c-focus);
+  outline-offset: 3px;
+  border-radius: var(--r-xs);
+}
+
+::selection { background: var(--brand-graphite); color: #fff; }
+
+/* ==================================================================
+   TYPOGRAPHY
+   Headings never overflow their box: long words wrap rather than
+   spill, and the expanded width is reserved for display sizes.
+================================================================== */
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 700;
+  line-height: var(--lh-heading);
+  letter-spacing: -0.012em;
+  text-wrap: balance;
+  overflow-wrap: break-word;
+}
+
+.display {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-stretch: var(--stretch-display);
+  line-height: var(--lh-display);
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+
+.t-hero, .t-4xl { font-size: var(--fs-display); }
+.t-3xl          { font-size: var(--fs-h2); }
+.t-2xl, .t-xl   { font-size: var(--fs-h3); }
+.t-lg           { font-size: var(--fs-h4); }
+
+.lead {
+  font-size: var(--fs-lead);
+  line-height: 1.6;
+  color: var(--c-text-2);
+  max-width: var(--measure);
+  text-wrap: pretty;
+}
+
+.prose p, .prose li { max-width: var(--measure); text-wrap: pretty; color: var(--c-text-2); }
+.prose p + p { margin-top: var(--s-4); }
+.prose strong { color: var(--c-text); font-weight: 600; }
+.prose h2 { font-size: var(--fs-h3); margin-top: var(--s-8); margin-bottom: var(--s-3); }
+.prose h3 { font-size: var(--fs-h4); margin-top: var(--s-6); margin-bottom: var(--s-2); }
+.prose > :first-child { margin-top: 0; }
+.prose a { color: var(--c-text); font-weight: 600; }
+
+/* Small-caps label voice (wide, like the logo's CONTRACTORS) */
+.mono, .eyebrow {
+  font-family: var(--font-sans);
+  font-size: var(--fs-label);
+  font-weight: 650;
+  font-stretch: var(--stretch-label);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.eyebrow {
+  color: var(--c-text-3);
+  margin-bottom: var(--s-4);
+}
+
+/* Identifier type: UEI, CAGE, NAICS, PSC */
+.code {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-variant-ligatures: none;
+  letter-spacing: 0.02em;
+  color: var(--c-text);
+}
+
+/* ==================================================================
+   LAYOUT PRIMITIVES
+================================================================== */
+
+.wrap {
+  width: 100%;
+  max-width: var(--wrap);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+.wrap--narrow { max-width: var(--wrap-narrow); }
+
+.section { padding-block: var(--section-y); position: relative; }
+.section--tight { padding-block: calc(var(--section-y) * 0.6); }
+.section--flush-top { padding-block-start: 0; }
+
+.section-head { max-width: 46rem; margin-bottom: var(--head-gap); }
+.section-head > * + * { margin-top: var(--s-4); }
+.section-head--center { margin-inline: auto; text-align: center; }
+.section-head--center .lead { margin-inline: auto; }
+
+.stack > * + * { margin-top: var(--s-4); }
+.stack-lg > * + * { margin-top: var(--gap); }
+
+.grid { display: grid; gap: var(--gap); }
+.grid--2 { grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr)); }
+/* Fixed column counts (never auto-fit) so a row never ends with one card alone */
+.grid--3 { grid-template-columns: 1fr; }
+@media (min-width: 52rem) { .grid--3 { grid-template-columns: repeat(3, 1fr); } }
+.grid--4 { grid-template-columns: 1fr; }
+@media (min-width: 36rem) { .grid--4 { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 64rem) { .grid--4 { grid-template-columns: repeat(4, 1fr); } }
+
+/* Capability bento: feature card + 4 lines lands as 2 full rows */
+.grid--caps { grid-template-columns: 1fr; }
+@media (min-width: 40rem) { .grid--caps { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 64rem) { .grid--caps { grid-template-columns: repeat(3, 1fr); } }
+
+.rule { block-size: 1px; background: var(--c-line); border: 0; }
+
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-link {
+  position: fixed;
+  inset-block-start: var(--s-3);
+  inset-inline-start: var(--s-3);
+  z-index: 300;
+  transform: translateY(-200%);
+  background: var(--brand-black);
+  color: #fff;
+  font-weight: 700;
+  font-size: var(--fs-sm);
+  padding: var(--s-3) var(--s-5);
+  border-radius: var(--r-sm);
+  text-decoration: none;
+  transition: transform var(--dur) var(--ease-out);
+}
+.skip-link:focus-visible { transform: translateY(0); }
+
+/* Even pairs: 2 columns from tablet up, so 4 items never leave an orphan */
+.grid--pairs { grid-template-columns: 1fr; }
+@media (min-width: 40rem) { .grid--pairs { grid-template-columns: repeat(2, 1fr); } }
